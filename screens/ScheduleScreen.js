@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import CourseList from '../components/CourseList'
+import UserContext from '../utils/UserContext';
 
 
 const schedule = {
@@ -30,6 +31,8 @@ const schedule = {
 };
 
 const ScheculeScreen = ({navigation}) => {
+  const user = useContext(UserContext);
+  const canEdit = user && user.role === 'admin';
   const [schedule, setSchedule] = useState({ title: '', courses: [] });
 
   const url = 'https://courses.cs.northwestern.edu/394/data/cs-courses.php';
@@ -45,7 +48,7 @@ const ScheculeScreen = ({navigation}) => {
   }, [])
 
   const view = (course) => {
-    navigation.navigate('CourseDetailScreen', { course });
+    navigation.navigate(canEdit ? 'CourseEditScreen' : 'CourseDetailScreen', { course });
   };
 
   return (

@@ -18,7 +18,7 @@ const CourseList = ({courses, view}) => {
 
 
   return (
-      <ScrollView style={{width: 350}}>
+      <ScrollView>
         <TermSelector terms={terms} selectedTerm={selectedTerm} setSelectedTerm={setSelectedTerm}/>
         <CourseSelector courses={termCourses} view={view}/>
       </ScrollView>
