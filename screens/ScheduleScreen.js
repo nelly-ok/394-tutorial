@@ -12,7 +12,7 @@ const fixCourses = json => ({
   courses: Object.values(json.courses)
 });
 
-const ScheculeScreen = ({navigation}) => {
+const ScheduleScreen = ({navigation}) => {
   const user = useContext(UserContext);
   const canEdit = user && user.role === 'admin';
   const [schedule, setSchedule] = useState({ title: '', courses: [] });
@@ -59,4 +59,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ScheculeScreen;
+export default ScheduleScreen;

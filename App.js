@@ -1,24 +1,67 @@
 import 'react-native-gesture-handler';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import ScheduleScreen from './screens/ScheduleScreen';
+import RegisterScreen from './screens/RegisterScreen';
 import CourseDetailScreen from './screens/CourseDetailScreen';
 import CourseEditScreen from './screens/CourseEditScreen';
 import UserContext from './utils/UserContext'
+import { Button } from 'react-native';
+import {firebase} from './utils/firebase'
+
+  
+const SignInButton = ({ navigation, user }) => (
+  user && user.uid
+  ? <Button title="Logout" color="#448aff"
+      onPress={() => firebase.auth().signOut()}
+    />
+  : <Button title="SignIn" color="#448aff"
+      onPress={() => navigation.navigate('RegisterScreen')}
+    />
+);
 
 
 const Stack = createStackNavigator();
 
 
 const App = () => {
-  const [user, setUser] = useState({role: 'admin'});
+  const [user, setUser] = useState(null);
+  const [auth, setAuth] = useState();
+ 
+  
+  useEffect(() => {
+    if (auth && auth.uid) {
+      const db = firebase.database().ref('users').child(auth.uid);
+      const handleData = snap => {
+        setUser({uid: auth.uid, ...snap.val()});
+      }
+      db.on('value', handleData, error => alert(error));
+      return () => { db.off('value', handleData); };
+    } else {
+      setUser(null);
+    }
+  }, [auth]);
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((auth) => {
+      setAuth(auth);
+    });
+  }, []);
+
 
   return (
     <UserContext.Provider value={user}>
        <NavigationContainer>
         <Stack.Navigator>
+        <Stack.Screen name="RegisterScreen" component={RegisterScreen}  options={({navigation}) => ({ 
+      title: "Schedule",
+      headerRight: () => (
+        <SignInButton navigation={navigation} user={user} />
+      ),
+    })
+  }/>
           <Stack.Screen name="ScheduleScreen"
             component={ScheduleScreen}
             options={{ title: 'Schedule'}}
